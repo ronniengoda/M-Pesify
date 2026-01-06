@@ -12,23 +12,26 @@ workflows:
       branch_patterns:
         - pattern: '*'
     scripts:
-      - name: Locate and Build APK
+      - name: Generate Gradle Wrapper and Build
         script: | 
-          # Find where gradlew is located
-          GRADLEW_PATH=$(find . -name gradlew | head -n 1)
+          # 1. Find the folder containing 'build.gradle'
+          BUILD_FILE_PATH=$(find . -name "build.gradle" | head -n 1)
           
-          if [ -z "$GRADLEW_PATH" ]; then
-            echo "Error: gradlew not found in the repository!"
+          if [ -z "$BUILD_FILE_PATH" ]; then
+            echo "Error: No build.gradle found. Is this an Android project?"
             exit 1
           fi
 
-          # Move to the directory containing gradlew
-          cd "$(dirname "$GRADLEW_PATH")"
+          # 2. Move to that directory
+          cd "$(dirname "$BUILD_FILE_PATH")"
           
-          # Set up local.properties
+          # 3. Generate the missing gradlew file
+          gradle wrapper
+          
+          # 4. Set up local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
           
-          # Build
+          # 5. Build the APK
           chmod +x gradlew
           ./gradlew assembleDebug
     artifacts:
