@@ -1,6 +1,6 @@
 workflows:
   android-build:
-    name: Android Debug APK Build
+    name: Cordova Android Build
     max_build_duration: 60
     instance_type: mac_mini_m2 
     environment:
@@ -12,30 +12,23 @@ workflows:
       branch_patterns:
         - pattern: '*'
     scripts:
-      - name: Generate Gradle Wrapper and Build
+      - name: Install Cordova and Build
         script: | 
-          # 1. Find the folder containing 'build.gradle'
-          BUILD_FILE_PATH=$(find . -name "build.gradle" | head -n 1)
+          # 1. Move to the Android platform folder
+          # In Cordova projects, the actual Android project lives here:
+          cd platforms/android
           
-          if [ -z "$BUILD_FILE_PATH" ]; then
-            echo "Error: No build.gradle found. Is this an Android project?"
-            exit 1
-          fi
-
-          # 2. Move to that directory
-          cd "$(dirname "$BUILD_FILE_PATH")"
-          
-          # 3. Generate the missing gradlew file
+          # 2. Generate the wrapper here
           gradle wrapper
           
-          # 4. Set up local.properties
+          # 3. Set up local.properties
           echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
           
-          # 5. Build the APK
+          # 4. Build the APK
           chmod +x gradlew
           ./gradlew assembleDebug
     artifacts:
-      - "**/build/outputs/apk/debug/*.apk"
+      - "platforms/android/app/build/outputs/apk/debug/*.apk"
     publishing:
       email:
         recipients:
