@@ -1,0 +1,31 @@
+# Codemagic CI configuration for M-Pesify
+workflows:
+  android-build:
+    name: Android Debug APK Build
+    max_build_duration: 60
+    instance_type: mac_mini_m1 # Fast and reliable for Android builds
+    environment:
+      android_sdk: 33 # Matches common modern Android SDK requirements
+      java: 17        # Standard for current Gradle versions
+    triggering:
+      events:
+        - push
+      branch_patterns:
+        - pattern: main
+        - pattern: master
+    scripts:
+      - name: Set up local.properties
+        script: | 
+          echo "sdk.dir=$ANDROID_SDK_ROOT" > local.properties
+      - name: Build Android Debug APK
+        script: | 
+          ./gradlew assembleDebug
+    artifacts:
+      - app/build/outputs/apk/**/*.apk
+    publishing:
+      email:
+        recipients:
+          - ronniengoda@gmail.com # Replace with your actual email
+        notify:
+          success: true
+          failure: true
