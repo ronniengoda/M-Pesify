@@ -1,19 +1,18 @@
-# Codemagic CI configuration for M-Pesify
+# Codemagic CI configuration for M-Pesify (Free Tier)
 workflows:
   android-build:
     name: Android Debug APK Build
     max_build_duration: 60
-    instance_type: linux_x2 # Standard Linux instance for faster Android builds
+    # Use mac_mini_m2 for the 500 free monthly minutes
+    instance_type: mac_mini_m2 
     environment:
-      groups:
-        - sdk_versions # Optional: useful if you define variables in the UI
       vars:
         JAVA_VERSION: "17"
     triggering:
       events:
         - push
       branch_patterns:
-        - pattern: '*' # This will build on any branch push
+        - pattern: '*'
     scripts:
       - name: Set up local.properties
         script: | 
@@ -27,7 +26,7 @@ workflows:
     publishing:
       email:
         recipients:
-          - ronniengoda@gmail.com # Replace with your email
+          - ronniengoda@gmail.com # Update this!
         notify:
           success: true
           failure: true
